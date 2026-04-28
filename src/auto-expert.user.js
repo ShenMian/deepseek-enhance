@@ -12,40 +12,43 @@
 // ==/UserScript==
 
 (function () {
-  "use strict";
+    "use strict";
 
-  // Flag to remember if user manually chose Instant model
-  let userChoseInstant = false;
+    /** @type {boolean} Flag indicating if the user manually selected the Instant model. */
+    let userChoseInstant = false;
 
-  // Switch to Expert model unless user deliberately chose Instant
-  const switchToExpert = () => {
-    if (userChoseInstant) return;
-    const expert = document.querySelector('[data-model-type="expert"]');
-    if (expert && expert.getAttribute("aria-checked") !== "true") {
-      expert.click();
-    }
-  };
+    /** Switches to the Expert model unless the user explicitly chose the Instant model. */
+    const switchToExpert = () => {
+        if (userChoseInstant) return;
+        const expert = document.querySelector('[data-model-type="expert"]');
+        if (expert && expert.getAttribute("aria-checked") !== "true") {
+            expert.click();
+        }
+    };
 
-  // Detect user clicks on model selector (capture phase to beat DOM updates)
-  document.addEventListener(
-    "mousedown",
-    (e) => {
-      if (e.target.closest('[data-model-type="default"]')) {
-        userChoseInstant = true;
-      } else if (e.target.closest('[data-model-type="expert"]')) {
-        userChoseInstant = false;
-      }
-    },
-    true,
-  );
+    /**
+     * Listens for mousedown events to track manual model selections. Uses capture phase to register
+     * before DOM updates.
+     */
+    document.addEventListener(
+        "mousedown",
+        (e) => {
+            if (e.target.closest('[data-model-type="default"]')) {
+                userChoseInstant = true;
+            } else if (e.target.closest('[data-model-type="expert"]')) {
+                userChoseInstant = false;
+            }
+        },
+        true,
+    );
 
-  // Re-apply Expert on any DOM change (navigation, re-renders, etc.)
-  new MutationObserver(switchToExpert).observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-  });
+    /** Observes DOM changes to re-apply the Expert model during navigation or re-renders. */
+    new MutationObserver(switchToExpert).observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+    });
 
-  // Initial switch after page load
-  switchToExpert();
+    // Initial application after page load
+    switchToExpert();
 })();
