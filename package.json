@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "scripts": {
+        "lint": "oxlint",
+        "format": "oxfmt src/**/*.user.js",
+        "format:check": "oxfmt --check src/**/*.user.js"
+    },
+    "devDependencies": {
+        "oxfmt": "latest",
+        "oxlint": "latest"
+    }
+}
