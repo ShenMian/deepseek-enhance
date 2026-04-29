@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Clone Conversation
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.1.2
+// @version      0.2.0
 // @description  Add a clone option to the conversation menu
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -127,7 +127,6 @@
 
         const sd = await apiCreateShare(sessionId, messageIds);
         const shareId = sd?.biz_data?.share_id;
-
         if (!shareId) {
             console.error("Share creation success but no share_id returned. Raw data:", sd);
             throw new Error("Failed to create share link: API did not return share_id");
@@ -135,13 +134,66 @@
 
         const fd = await apiForkShare(shareId);
         const newSessionId = fd?.biz_data?.chat_session_id;
-
         if (!newSessionId) {
             console.error("Fork success but no chat_session_id returned. Raw data:", fd);
             throw new Error("Failed to clone conversation: API did not return new session ID");
         }
 
         return newSessionId;
+    }
+
+    /**
+     * Extracts the linear message path from a conversation with potential branches. Traverses from
+     * the last message back to root via parent_id.
+     *
+     * @param {Array} allMessages - All messages from the conversation history.
+     * @returns {string[]} Array of message IDs in chronological order (root to leaf).
+     */
+    function extractLinearPath(allMessages) {
+        if (!allMessages || allMessages.length === 0) return [];
+
+        const firstMsg = allMessages[0];
+        const idField =
+            firstMsg.message_id !== undefined
+                ? "message_id"
+                : firstMsg.id !== undefined
+                  ? "id"
+                  : null;
+        const parentIdField =
+            firstMsg.parent_id !== undefined
+                ? "parent_id"
+                : firstMsg.pid !== undefined
+                  ? "pid"
+                  : null;
+
+        if (!idField) return allMessages.map((m) => m.message_id || m.id);
+        if (!parentIdField) return allMessages.map((m) => String(m[idField]));
+
+        const msgMap = new Map();
+        allMessages.forEach((m) => {
+            const id = String(m[idField]);
+            if (id) msgMap.set(id, m);
+        });
+
+        let currentMsg = allMessages[allMessages.length - 1];
+        const pathIds = [];
+        const visited = new Set();
+
+        while (currentMsg) {
+            const currentId = String(currentMsg[idField]);
+            if (!currentId || visited.has(currentId)) break;
+            visited.add(currentId);
+            pathIds.push(currentId);
+
+            const pId = currentMsg[parentIdField];
+            if (!pId || pId === 0 || pId === "0" || pId === "root" || pId === "") break;
+
+            const parentId = String(pId);
+            if (!msgMap.has(parentId)) break;
+            currentMsg = msgMap.get(parentId);
+        }
+
+        return pathIds.reverse();
     }
 
     /**
@@ -159,7 +211,11 @@
             throw new Error("Target conversation is empty");
         }
 
-        const messageIds = msgs.map((m) => m.message_id);
+        // Extract linear path to handle conversations with branches
+        const messageIds = extractLinearPath(msgs);
+        if (messageIds.length === 0) {
+            throw new Error("Failed to extract message IDs from conversation");
+        }
         return await coreForkMessages(sessionId, messageIds);
     }
 
