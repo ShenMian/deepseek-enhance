@@ -1,6 +1,10 @@
 # DeepSeek Enhance
 
-A collection of lightweight userscripts to improve the DeepSeek Chat (DSeek) experience.
+!!! warning
+    This project is **unofficial** and not affiliated with or endorsed by DeepSeek.  
+    "DeepSeek", "DSeek", and the DeepSeek logo are trademarks and copyrights of DeepSeek.
+
+A collection of lightweight userscripts to improve the [DeepSeek Chat (DSeek)](https://chat.deepseek.com/) experience.
 
 | Script                 | Description                                            | Links                                                                                                                                                                                       |
 | :--------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
