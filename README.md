@@ -1,10 +1,12 @@
 # DeepSeek Enhance
 
-!!! warning
-    This project is **unofficial** and not affiliated with or endorsed by DeepSeek.  
-    "DeepSeek", "DSeek", and the DeepSeek logo are trademarks and copyrights of DeepSeek.
+**English** | [中文](README_zh.md)
 
-A collection of lightweight userscripts to improve the [DeepSeek Chat (DSeek)](https://chat.deepseek.com/) experience.
+> [!WARNING]
+> This project is **unofficial** and not affiliated with or endorsed by DeepSeek.  
+> "DeepSeek", "DSeek", and the DeepSeek logo are trademarks and copyrights of DeepSeek.
+
+A collection of lightweight userscripts to improve the [DSeek](https://chat.deepseek.com/) (DeepSeek Chat) experience.
 
 | Script                 | Description                                            | Links                                                                                                                                                                                       |
 | :--------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
