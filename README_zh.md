@@ -13,6 +13,7 @@
 | **Auto Collapse**      | 自动折叠“深度思考”过程块.                         | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-collapse.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575582-dseek-auto-collapse)           |
 | **Auto Expert**        | 自动切换至专家模型 (Expert).                      | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-expert.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575568-dseek-auto-expert)               |
 | **Clone Conversation** | 在原生聊天菜单中添加 `Clone` (克隆) 选项.[^clone] | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/clone-conversation.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575540-dseek-clone-conversation) |
+| **Quote Reply**        | 添加悬浮菜单以引用选中的文本.                     | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/quote-reply.user.js)                                                                                          |
 
 [^clone]: 此操作将会为该对话生成一个**公开的**分享链接.
 
