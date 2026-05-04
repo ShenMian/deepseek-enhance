@@ -8,13 +8,14 @@
 
 A collection of lightweight userscripts to improve the [DSeek](https://chat.deepseek.com/) (DeepSeek Chat) experience.
 
-| Script                 | Description                                            | Links                                                                                                                                                                                       |
-| :--------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Auto Collapse**      | Automatically collapses the "Thinking" process block.  | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-collapse-thought.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575582-dseek-auto-collapse)   |
-| **Auto Expert**        | Automatically switches to the Expert model.            | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-expert.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575568-dseek-auto-expert)               |
-| **Clone Conversation** | Adds a `Clone` option to the native chat menu.[^clone] | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/clone-conversation.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575540-dseek-clone-conversation) |
-| **Quote Reply**        | Adds a floating menu to quote selected text.           | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/quote-reply.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/576008-dseek-quote-reply)               |
+| Script                    | Description                                                              | Links                                                                                                                                                                                       |
+| :------------------------ | :----------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Auto Collapse Thought** | Automatically collapses the "Thinking" process block.[^collapse-thought] | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-collapse-thought.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575582-dseek-auto-collapse)   |
+| **Auto Expert**           | Automatically switches to the Expert model.                              | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-expert.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575568-dseek-auto-expert)               |
+| **Clone Conversation**    | Adds a `Clone` option to the native chat menu.[^clone]                   | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/clone-conversation.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575540-dseek-clone-conversation) |
+| **Quote Reply**           | Adds a floating menu to quote selected text.                             | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/quote-reply.user.js)                                                                                          |
 
+[^collapse-thought]: There is currently a page-jump issue when collapsing the thought block.
 [^clone]: This will generate a **public** share link for the conversation.
 
 ## Installation
