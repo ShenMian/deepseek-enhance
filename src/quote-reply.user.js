@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Quote Reply
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.1.0
+// @version      0.1.1
 // @description  Adds a floating menu to quote selected text
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -16,12 +16,20 @@
 
     const INPUT_SELECTOR = 'textarea[name="search"]';
 
+    // Track mouse position for menu placement
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
     // Create floating menu element
     const menu = document.createElement("div");
     menu.textContent = "↩ Quote Reply";
     Object.assign(menu.style, {
         position: "fixed",
-        background: "#2a2a35", // Matches DSeek dark popover
+        background: "#2a2a35",
         color: "#e5e5e5",
         padding: "6px 12px",
         borderRadius: "8px",
@@ -43,22 +51,23 @@
     let selectedText = "";
 
     /**
-     * Handles mouse up events to detect text selection and position the menu.
-     *
-     * @param {MouseEvent} e - The mouse event.
+     * Sync menu visibility with the actual selection state. Uses the last known mouse position for
+     * placement.
      */
-    function handleSelection(e) {
-        if (e.target === menu) return;
-        selectedText = window.getSelection().toString().trim();
+    function updateMenuFromSelection() {
+        const selection = window.getSelection();
+        const text = selection ? selection.toString().trim() : "";
 
-        if (selectedText) {
+        if (text) {
+            selectedText = text;
             menu.style.display = "block";
             // Prevent viewport overflow
-            const x = Math.min(e.clientX + 10, window.innerWidth - 120);
-            const y = Math.min(e.clientY + 10, window.innerHeight - 40);
+            const x = Math.min(mouseX + 10, window.innerWidth - 120);
+            const y = Math.min(mouseY + 10, window.innerHeight - 40);
             menu.style.left = `${x}px`;
             menu.style.top = `${y}px`;
         } else {
+            selectedText = "";
             menu.style.display = "none";
         }
     }
@@ -79,30 +88,29 @@
         nativeSetter.call(textarea, quote + textarea.value);
         textarea.dispatchEvent(new Event("input", { bubbles: true }));
 
-        menu.style.display = "none";
+        // Clear selection and hide menu (selectionchange will also trigger hide)
         window.getSelection().removeAllRanges();
 
         // Delay focus to ensure React re-renders and UI transitions complete
         setTimeout(() => {
             textarea.focus();
-            // Place cursor at the end of the inserted quote for immediate typing
             textarea.setSelectionRange(quote.length, quote.length);
         }, 50);
     }
 
-    /** Hides the menu when interacting outside of it. */
-    function hideMenu(e) {
-        if (e && e.target === menu) return;
+    /** Hide menu when scrolling or resizing, because the fixed position may be stale. */
+    function hideMenuOnScrollOrResize() {
         menu.style.display = "none";
+        selectedText = "";
     }
 
     // Event listeners
-    document.addEventListener("mouseup", handleSelection);
+    document.addEventListener("selectionchange", updateMenuFromSelection);
     menu.addEventListener("mousedown", (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Prevent any document‑level mousedown handlers from firing
         insertQuote();
     });
-    document.addEventListener("mousedown", hideMenu);
-    window.addEventListener("scroll", hideMenu, true);
-    window.addEventListener("resize", hideMenu);
+    window.addEventListener("scroll", hideMenuOnScrollOrResize, true);
+    window.addEventListener("resize", hideMenuOnScrollOrResize);
 })();
