@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         DSeek Auto Collapse
+// @name         DSeek Auto Collapse Thought
 // @namespace    https://github.com/ShenMian/deepseek-enhance
 // @version      0.1.1
 // @description  Auto-collapse thinking blocks in conversations
