@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Quote Reply
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.1.1
+// @version      0.1.2
 // @description  Adds a floating menu to quote selected text
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -15,6 +15,7 @@
     "use strict";
 
     const INPUT_SELECTOR = 'textarea[name="search"]';
+    const TARGET_CLASS = '.ds-assistant-message-main-content';
 
     // Track mouse position for menu placement
     let mouseX = 0;
@@ -51,14 +52,31 @@
     let selectedText = "";
 
     /**
-     * Sync menu visibility with the actual selection state. Uses the last known mouse position for
-     * placement.
+     * Checks if the current text selection is fully contained within an element matching the given selector.
+     * @param {string} selector - CSS selector to match the container.
+     * @returns {boolean}
+     */
+    function isSelectionInsideElement(selector) {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+
+        const range = selection.getRangeAt(0);
+        const container = range.commonAncestorContainer;
+        const el = container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
+        return el && el.closest(selector) != null;
+    }
+
+    /**
+     * Sync menu visibility with the actual selection state. Only shows the menu when the
+     * selection is inside a .ds-assistant-message-main-content block.
+     * Uses the last known mouse position for placement.
      */
     function updateMenuFromSelection() {
         const selection = window.getSelection();
         const text = selection ? selection.toString().trim() : "";
+        const isInTarget = isSelectionInsideElement(TARGET_CLASS);
 
-        if (text) {
+        if (text && isInTarget) {
             selectedText = text;
             menu.style.display = "block";
             // Prevent viewport overflow
