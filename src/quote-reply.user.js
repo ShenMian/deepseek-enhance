@@ -15,9 +15,11 @@
     "use strict";
 
     const INPUT_SEL = 'textarea[name="search"], textarea#chat-input, textarea';
-    const TARGET_SEL = '.ds-assistant-message-main-content, .ds-markdown';
-    const ICON_QUOTE = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v9a3 3 0 0 0 3 3h9"/><polyline points="15 13 18 16 15 19"/></svg>';
-    const ICON_CLOSE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    const TARGET_SEL = ".ds-assistant-message-main-content, .ds-markdown";
+    const ICON_QUOTE =
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v9a3 3 0 0 0 3 3h9"/><polyline points="15 13 18 16 15 19"/></svg>';
+    const ICON_CLOSE =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
     let activeQuote = "";
     let quoteBar = null;
@@ -63,7 +65,10 @@
         floatBtn = document.createElement("div");
         floatBtn.className = "ds-quote-float-btn";
         floatBtn.innerHTML = `${ICON_QUOTE}<span>Quote</span>`;
-        floatBtn.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); });
+        floatBtn.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
         floatBtn.addEventListener("click", (e) => {
             e.preventDefault();
             const text = window.getSelection()?.toString().trim();
@@ -76,7 +81,9 @@
     }
 
     // Hide the floating quote button.
-    const hideFloatingBtn = () => { if (floatBtn) floatBtn.style.display = "none"; };
+    const hideFloatingBtn = () => {
+        if (floatBtn) floatBtn.style.display = "none";
+    };
 
     // Resolve the outermost chatbox card container with rounded corners.
     function getOutermostCard(textarea) {
@@ -102,7 +109,9 @@
         quoteBar = document.createElement("div");
         quoteBar.className = "ds-chat-quote-bar";
         quoteBar.innerHTML = `<div class="ds-chat-quote-left">${ICON_QUOTE}<div class="ds-chat-quote-text"></div></div><button class="ds-chat-quote-close" title="Cancel quote">${ICON_CLOSE}</button>`;
-        quoteBar.querySelector(".ds-chat-quote-close").addEventListener("click", () => clearQuote(true));
+        quoteBar
+            .querySelector(".ds-chat-quote-close")
+            .addEventListener("click", () => clearQuote(true));
         quoteText = quoteBar.querySelector(".ds-chat-quote-text");
 
         container.insertBefore(quoteBar, container.firstChild);
@@ -173,7 +182,9 @@
     });
 
     // Hide floating button when selection collapses or on scroll.
-    document.addEventListener("selectionchange", () => { if (!window.getSelection() || window.getSelection().isCollapsed) hideFloatingBtn(); });
+    document.addEventListener("selectionchange", () => {
+        if (!window.getSelection() || window.getSelection().isCollapsed) hideFloatingBtn();
+    });
     window.addEventListener("scroll", hideFloatingBtn, true);
 
     // Insert Markdown quote block into textarea before submission.
@@ -188,18 +199,37 @@
     }
 
     // Intercept Enter key to prepend quote block before submission.
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey && !e.isComposing && activeQuote && document.activeElement === getTextarea()) {
-            injectQuoteIntoTextarea();
-        }
-    }, true);
+    document.addEventListener(
+        "keydown",
+        (e) => {
+            if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.isComposing &&
+                activeQuote &&
+                document.activeElement === getTextarea()
+            ) {
+                injectQuoteIntoTextarea();
+            }
+        },
+        true,
+    );
 
     // Intercept send button clicks to prepend quote block before submission.
-    document.addEventListener("click", (e) => {
-        if (!activeQuote) return;
-        const btn = e.target.closest("button, [role='button']");
-        if (btn && !btn.closest(".ds-chat-quote-bar") && btn.querySelector("svg") && !btn.innerText.match(/DeepThink|Search/i)) {
-            injectQuoteIntoTextarea();
-        }
-    }, true);
+    document.addEventListener(
+        "click",
+        (e) => {
+            if (!activeQuote) return;
+            const btn = e.target.closest("button, [role='button']");
+            if (
+                btn &&
+                !btn.closest(".ds-chat-quote-bar") &&
+                btn.querySelector("svg") &&
+                !btn.innerText.match(/DeepThink|Search/i)
+            ) {
+                injectQuoteIntoTextarea();
+            }
+        },
+        true,
+    );
 })();
