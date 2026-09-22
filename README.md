@@ -20,13 +20,13 @@ A collection of lightweight userscripts to improve the [DSeek](https://chat.deep
 
 ## Screenshots
 
-<table style="border-collapse: collapse; width: 100%; text-align: center;">
+<table style="width: 100%; border-collapse: collapse;">
   <tr>
-    <td style="border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
-      <img src="docs/quote-reply.png" width="300" alt="Quote Reply screenshot">
+    <td style="width: 70%; border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
+      <img src="docs/quote-reply.png" style="width: 100%; height: auto;" alt="Quote Reply screenshot">
     </td>
-    <td style="border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
-      <img src="docs/clone-conversation.png" width="150" alt="Clone Conversation screenshot">
+    <td style="width: 30%; border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
+      <img src="docs/clone-conversation.png" style="width: 100%; height: auto;" alt="Clone Conversation screenshot">
     </td>
   </tr>
 </table>
