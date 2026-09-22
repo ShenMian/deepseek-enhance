@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Quote Reply
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.2.1
+// @version      0.2.2
 // @description  Adds a floating menu and top-bar card to quote selected text
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -227,7 +227,7 @@
 
         quoteBar = document.createElement("div");
         quoteBar.className = "ds-chat-quote-bar";
-        quoteBar.innerHTML = `<div class="ds-chat-quote-left">${ICON_QUOTE}<div class="ds-chat-quote-text"></div></div><button class="ds-chat-quote-close" title="Cancel quote">${ICON_CLOSE}</button>`;
+        quoteBar.innerHTML = `<div class="ds-chat-quote-left">${ICON_QUOTE}<div class="ds-chat-quote-text"></div></div><button class="ds-chat-quote-close">${ICON_CLOSE}</button>`;
         quoteBar
             .querySelector(".ds-chat-quote-close")
             .addEventListener("click", () => clearQuote(true));
