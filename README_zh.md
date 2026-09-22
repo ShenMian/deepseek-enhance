@@ -11,12 +11,25 @@
 | 脚本                      | 描述                                              | 链接                                                                                                                                                                                        |
 | :------------------------ | :------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Auto Collapse Thought** | 自动折叠 "深度思考" 过程块.[^collapse-thought]    | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-collapse-thought.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575582-dseek-auto-collapse)   |
-| **Clone Conversation**    | 在原生聊天菜单中添加 `Clone` (克隆) 选项.[^clone] | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/clone-conversation.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575540-dseek-clone-conversation) |
 | **Quote Reply**           | 添加悬浮菜单以引用选中的文本.                     | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/quote-reply.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/576008-dseek-quote-reply)               |
+| **Clone Conversation**    | 在原生聊天菜单中添加 `Clone` (克隆) 选项.[^clone] | [GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/clone-conversation.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575540-dseek-clone-conversation) |
 | ~~**Auto Expert**~~       | ~~自动切换至专家模型 (Expert).~~                  | ~~[GitHub](https://github.com/ShenMian/deepseek-enhance/raw/refs/heads/main/src/auto-expert.user.js), [Greasy Fork](https://greasyfork.org/en/scripts/575568-dseek-auto-expert)~~           |
 
 [^collapse-thought]: 目前存在页面瞬间滚动的缺陷.
 [^clone]: 此操作将会为该对话生成一个**公开的**分享链接.
+
+## 截图
+
+<table style="border-collapse: collapse; width: 100%; text-align: center;">
+  <tr>
+    <td style="border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
+      <img src="docs/quote-reply.png" width="300" alt="Quote Reply screenshot">
+    </td>
+    <td style="border: 1px solid #d0d7de; padding: 12px; vertical-align: middle;">
+      <img src="docs/clone-conversation.png" width="150" alt="Clone Conversation screenshot">
+    </td>
+  </tr>
+</table>
 
 ## 安装
 
