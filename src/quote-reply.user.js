@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Quote Reply
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.2.0
+// @version      0.2.1
 // @description  Adds a floating menu and top-bar card to quote selected text
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -28,20 +28,139 @@
     let lastMousePos = { x: 0, y: 0 };
     let lastChatUrl = location.href;
 
-    // Inject styles for floating quote trigger and seamless top quote bar.
+    // Inject styles for floating quote trigger and seamless top quote bar, with light/dark theme support.
     const style = document.createElement("style");
     style.textContent = `
-        .ds-quote-float-btn { position: fixed; display: none; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(45,45,48,0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; font: 500 12.5px/1.2 system-ui, -apple-system, sans-serif; cursor: pointer; z-index: 999999; box-shadow: 0 4px 12px rgba(0,0,0,0.35); user-select: none; transition: background .15s, border-color .15s; }
-        .ds-quote-float-btn:hover { background: rgba(60,60,64,0.98); color: #fff; border-color: rgba(255,255,255,0.22); }
-        .ds-quote-float-btn svg { color: #a1a1aa; }
-        .ds-quote-float-btn:hover svg { color: #e4e4e7; }
-        .ds-chat-quote-bar { display: none; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 8px 16px; background: rgba(255,255,255,0.08) !important; border-radius: 0 !important; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 4px; font: 450 13px/1.4 system-ui, -apple-system, sans-serif; color: #f1f5f9; user-select: none; }
-        .ds-chat-quote-bar.show { display: flex; }
-        .ds-chat-quote-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-        .ds-chat-quote-left svg { color: #a1a1aa; flex-shrink: 0; }
-        .ds-chat-quote-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f1f5f9; }
-        .ds-chat-quote-close { display: inline-flex; align-items: center; justify-content: center; background: transparent; border: none; color: #a1a1aa; cursor: pointer; padding: 3px; border-radius: 4px; margin-left: 10px; flex-shrink: 0; transition: color .15s, background .15s; }
-        .ds-chat-quote-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        /* Light theme (default) */
+        .ds-quote-float-btn {
+            position: fixed;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #1f2937;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 6px;
+            font: 500 12.5px/1.2 system-ui, -apple-system, sans-serif;
+            cursor: pointer;
+            z-index: 999999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            user-select: none;
+            transition: background .15s, border-color .15s;
+        }
+        .ds-quote-float-btn:hover {
+            background: rgba(245, 245, 245, 0.98);
+            color: #000;
+            border-color: rgba(0, 0, 0, 0.22);
+        }
+        .ds-quote-float-btn svg {
+            color: #6b7280;
+        }
+        .ds-quote-float-btn:hover svg {
+            color: #1f2937;
+        }
+        .ds-chat-quote-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-radius: 0 !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            margin-bottom: 4px;
+            font: 450 13px/1.4 system-ui, -apple-system, sans-serif;
+            color: #1f2937;
+            user-select: none;
+        }
+        .ds-chat-quote-bar.show {
+            display: flex;
+        }
+        .ds-chat-quote-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .ds-chat-quote-left svg {
+            color: #6b7280;
+            flex-shrink: 0;
+        }
+        .ds-chat-quote-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #1f2937;
+        }
+        .ds-chat-quote-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 3px;
+            border-radius: 4px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            transition: color .15s, background .15s;
+        }
+        .ds-chat-quote-close:hover {
+            color: #000;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark theme overrides */
+        body.dark .ds-quote-float-btn,
+        body[data-ds-dark-theme="dark"] .ds-quote-float-btn {
+            background: rgba(45, 45, 48, 0.96);
+            color: #e4e4e7;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+        }
+        body.dark .ds-quote-float-btn:hover,
+        body[data-ds-dark-theme="dark"] .ds-quote-float-btn:hover {
+            background: rgba(60, 60, 64, 0.98);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+        body.dark .ds-quote-float-btn svg,
+        body[data-ds-dark-theme="dark"] .ds-quote-float-btn svg {
+            color: #a1a1aa;
+        }
+        body.dark .ds-quote-float-btn:hover svg,
+        body[data-ds-dark-theme="dark"] .ds-quote-float-btn:hover svg {
+            color: #e4e4e7;
+        }
+        body.dark .ds-chat-quote-bar,
+        body[data-ds-dark-theme="dark"] .ds-chat-quote-bar {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f1f5f9;
+        }
+        body.dark .ds-chat-quote-left svg,
+        body[data-ds-dark-theme="dark"] .ds-chat-quote-left svg {
+            color: #a1a1aa;
+        }
+        body.dark .ds-chat-quote-text,
+        body[data-ds-dark-theme="dark"] .ds-chat-quote-text {
+            color: #f1f5f9;
+        }
+        body.dark .ds-chat-quote-close,
+        body[data-ds-dark-theme="dark"] .ds-chat-quote-close {
+            color: #a1a1aa;
+        }
+        body.dark .ds-chat-quote-close:hover,
+        body[data-ds-dark-theme="dark"] .ds-chat-quote-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
     `;
     document.head.appendChild(style);
 
