@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Quote Reply
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.2.2
+// @version      0.2.3
 // @description  Adds a floating menu and top-bar card to quote selected text
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -20,6 +20,18 @@
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v9a3 3 0 0 0 3 3h9"/><polyline points="15 13 18 16 15 19"/></svg>';
     const ICON_CLOSE =
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    const LANG = {
+        en_US: "Quote", // English
+        zh_CN: "引用", // Simplified Chinese
+        zh_TW: "引述", // Traditional Chinese
+    };
+    const QUOTE_LABEL = (() => {
+        const code = JSON.parse(
+            localStorage.getItem("__appKit_@deepseek/chat_localePreference"),
+        ).value;
+        return LANG[code] || LANG.en_US;
+    })();
 
     let activeQuote = "";
     let quoteBar = null;
@@ -183,7 +195,7 @@
         if (floatBtn) return floatBtn;
         floatBtn = document.createElement("div");
         floatBtn.className = "ds-quote-float-btn";
-        floatBtn.innerHTML = `${ICON_QUOTE}<span>Quote</span>`;
+        floatBtn.innerHTML = `${ICON_QUOTE}<span>${QUOTE_LABEL}</span>`;
         floatBtn.addEventListener("mousedown", (e) => {
             e.preventDefault();
             e.stopPropagation();
