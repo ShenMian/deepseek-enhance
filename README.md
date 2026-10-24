@@ -36,6 +36,10 @@ A collection of lightweight userscripts to improve the [DSeek](https://chat.deep
 1. Install a user script manager like **[Violentmonkey](https://violentmonkey.github.io/)** (MIT License) or [Tampermonkey](https://www.tampermonkey.net/) (proprietary) for your browser.
 2. Click the links in the table above to install the script.
 
+## AI Disclosure
+
+This project is developed entirely with LLM assistance, and no human code review has been performed.
+
 ## License
 
 Licensed under either of

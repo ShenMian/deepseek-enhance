@@ -36,6 +36,10 @@
 1. 在您的浏览器中安装用户脚本管理器, 例如 **[Violentmonkey](https://violentmonkey.github.io/)** (MIT 开源许可证) 或 [Tampermonkey](https://www.tampermonkey.net/) (专有软件).
 2. 点击上表中的链接以安装对应的脚本.
 
+## AI 披露
+
+本项目完全借助 LLM 辅助开发, 且未进行人工代码审核.
+
 ## 许可证
 
 本项目双重授权, 您可以自由选择使用以下任意一种许可证：
