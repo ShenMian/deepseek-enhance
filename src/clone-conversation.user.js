@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DSeek Clone Conversation
 // @namespace    https://github.com/ShenMian/deepseek-enhance
-// @version      0.2.0
+// @version      0.2.1
 // @description  Add a clone option to the conversation menu
 // @author       ShenMian
 // @license      Apache-2.0 OR MIT
@@ -29,6 +29,9 @@
 
     /** @type {string} Base API URL for DeepSeek. */
     const API_BASE = "https://chat.deepseek.com/api/v0";
+
+    /** @type {string} Site build version reported via `x-client-version`. */
+    const CLIENT_VERSION = "2.7.0";
 
     const LANG = {
         Rename: "Clone", // English
@@ -64,6 +67,55 @@
     }
 
     /**
+     * Resolves the locale code reported via `x-client-locale`, mirroring the site's locale
+     * preference with a fallback derived from the browser language.
+     *
+     * @returns {string} The locale code, e.g. `"zh_CN"`.
+     */
+    function getClientLocale() {
+        try {
+            const pref = JSON.parse(
+                localStorage.getItem("__appKit_@deepseek/chat_localePreference"),
+            );
+            if (pref && typeof pref.value === "string" && pref.value !== "system") {
+                return pref.value;
+            }
+        } catch {
+            // Fall through to the browser language
+        }
+        const lang = (navigator.language || "en-US").replace("-", "_");
+        if (lang === "zh_TW") return "zh_Hant";
+        if (lang === "zh_HK") return "zh_HK";
+        if (lang === "zh" || lang.startsWith("zh_")) return "zh_CN";
+        return lang;
+    }
+
+    /**
+     * Builds the client and device headers the site attaches to every API request. Without them the
+     * backend rejects authenticated requests with a plain-text error instead of JSON.
+     *
+     * @returns {Object} The headers object.
+     */
+    function buildClientHeaders() {
+        const headers = {
+            "x-client-bundle-id":
+                document.querySelector('meta[name="region"]')?.content === "GB"
+                    ? "com.deepseek.chat.nov"
+                    : "com.deepseek.chat",
+            "x-client-platform": "web",
+            "x-client-version": CLIENT_VERSION,
+            "x-client-locale": getClientLocale(),
+            "x-client-timezone-offset": String(-new Date().getTimezoneOffset() * 60),
+        };
+        const deviceId = localStorage.getItem("deepseek-device-id:chat");
+        if (deviceId) {
+            headers["x-device-id"] = deviceId;
+            headers["x-device-model"] = "";
+        }
+        return headers;
+    }
+
+    /**
      * Generic API request wrapper.
      *
      * @param {string} path - The API endpoint path.
@@ -75,16 +127,12 @@
         const token = getToken();
         if (!token) throw new Error("User token not found. Please log in.");
 
-        // Use dynamic date for X-App-Version to prevent header expiration issues
-        const today = new Date();
-        const versionDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}`;
-
         const opts = {
             method,
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
-                "X-App-Version": versionDate,
+                ...buildClientHeaders(),
             },
         };
         if (body) {
@@ -93,7 +141,14 @@
 
         try {
             const res = await fetch(`${API_BASE}${path}`, opts);
-            const json = await res.json();
+            const text = await res.text();
+            let json;
+            try {
+                json = JSON.parse(text);
+            } catch {
+                // Surface the raw server message instead of a JSON parse error
+                throw new Error(`Unexpected response (HTTP ${res.status}): ${text.slice(0, 120)}`);
+            }
 
             if (json.code !== 0) {
                 console.error(`API Logic Error (${path}):`, json);
@@ -147,7 +202,8 @@
      * the last message back to root via parent_id.
      *
      * @param {Array} allMessages - All messages from the conversation history.
-     * @returns {string[]} Array of message IDs in chronological order (root to leaf).
+     * @returns {Array} Raw message ID values in chronological order (root to leaf). The share API
+     *   requires numeric IDs, so values are passed through without string conversion.
      */
     function extractLinearPath(allMessages) {
         if (!allMessages || allMessages.length === 0) return [];
@@ -167,12 +223,11 @@
                   : null;
 
         if (!idField) return allMessages.map((m) => m.message_id || m.id);
-        if (!parentIdField) return allMessages.map((m) => String(m[idField]));
+        if (!parentIdField) return allMessages.map((m) => m[idField]);
 
         const msgMap = new Map();
         allMessages.forEach((m) => {
-            const id = String(m[idField]);
-            if (id) msgMap.set(id, m);
+            if (m[idField] != null) msgMap.set(m[idField], m);
         });
 
         let currentMsg = allMessages[allMessages.length - 1];
@@ -180,17 +235,16 @@
         const visited = new Set();
 
         while (currentMsg) {
-            const currentId = String(currentMsg[idField]);
-            if (!currentId || visited.has(currentId)) break;
+            const currentId = currentMsg[idField];
+            if (currentId == null || visited.has(currentId)) break;
             visited.add(currentId);
             pathIds.push(currentId);
 
             const pId = currentMsg[parentIdField];
-            if (!pId || pId === 0 || pId === "0" || pId === "root" || pId === "") break;
+            if (!pId || pId === "root") break;
 
-            const parentId = String(pId);
-            if (!msgMap.has(parentId)) break;
-            currentMsg = msgMap.get(parentId);
+            if (!msgMap.has(pId)) break;
+            currentMsg = msgMap.get(pId);
         }
 
         return pathIds.reverse();
@@ -259,14 +313,14 @@
      * @param {Element} menu - The dropdown menu element.
      */
     function injectClone(menu) {
-        if (!menu || menu.dataset.cloneInjected) {
-            return; // Prevent duplicate injection
+        if (!menu) {
+            return;
         }
 
         // Collect all known "Rename" labels across languages
         const rename = [...menu.children].find((c) => RENAME_LABELS.includes(c.textContent.trim()));
         if (!rename || menu.querySelector(".ds-dropdown-menu-option--clone")) {
-            return;
+            return; // Prevent duplicate injection
         }
 
         // Determine the target label for the "Clone" button based on the current language
@@ -322,9 +376,8 @@
         clone.addEventListener("mouseenter", () => menu.setAttribute("data-clone-hovering", ""));
         clone.addEventListener("mouseleave", () => menu.removeAttribute("data-clone-hovering"));
 
-        // Insert after 'Rename' and mark menu as processed
+        // Insert after 'Rename'
         rename.parentElement.insertBefore(clone, rename.nextSibling);
-        menu.dataset.cloneInjected = "true";
     }
 
     // Observes the DOM for dropdown menus to inject the clone option
@@ -348,8 +401,12 @@
 
     // Observes the DOM for dropdown menus to inject the clone option
     const observer = new MutationObserver(() => {
-        const menu = document.querySelector('.ds-dropdown-menu[role="menu"]');
-        if (menu && !menu.dataset.cloneInjected) {
+        // The site keeps every opened dropdown mounted in the DOM after it closes, so the first
+        // menu in document order is not necessarily the one just opened; scan them all.
+        for (const menu of document.querySelectorAll('.ds-dropdown-menu[role="menu"]')) {
+            if (menu.querySelector(".ds-dropdown-menu-option--clone")) {
+                continue; // Already injected
+            }
             // Validate this is a sidebar menu by checking its contents against known LANG keys
             if (RENAME_REGEX.test(menu.textContent)) {
                 injectClone(menu);
